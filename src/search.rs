@@ -6,6 +6,7 @@ use crate::params;
 use crate::pagination::Page;
 use crate::i18n::I18n;
 use crate::error::Error;
+use crate::user::User;
 
 // Project is a search resource.
 #[derive(Debug, Serialize, Deserialize)]
@@ -41,6 +42,10 @@ pub struct Project {
     // Type of the project (presale or project)
     #[serde(alias = "type")]
     pub kind: String,
+
+    // The following fields are extra_fields and must be explicitly specified in the request:
+    // Owner is the project owner
+    pub owner: Option<User>
 }
 
 // Projects is a paginated list of search project resource.
