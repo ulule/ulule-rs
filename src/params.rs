@@ -1,5 +1,6 @@
 pub struct Params {
     query: Vec<(String, String)>,
+    extra_fields: Vec<String>,
     lang: Option<String>,
     limit: Option<u64>,
     offset: Option<u64>,
@@ -12,6 +13,7 @@ impl Params {
             lang: None,
             limit: None,
             offset: None,
+            extra_fields: Default::default(),
         }
     }
 
@@ -24,6 +26,12 @@ impl Params {
     pub fn offset(self, o: u64) -> Params {
         let mut params = self;
         params.offset = Some(o);
+        params
+    }
+
+    pub fn with_extra_fields(self, fields: Vec<String>) -> Params {
+        let mut params = self;
+        params.extra_fields = fields;
         params
     }
 
@@ -40,6 +48,11 @@ impl Params {
                 }
                 res.push_str("+");
             };
+        }
+
+        if !self.extra_fields.is_empty() {
+            res.push_str("&extra_fields=");
+            res.push_str(&self.extra_fields.join(","));
         }
 
         self.lang.map(|l|{
@@ -65,7 +78,10 @@ mod tests {
     #[test]
     fn to_string() {
         use super::Params;
-        let p = Params::new().limit(30).offset(10);
-        assert_eq!(p.to_string(), "?&limit=30&offset=10");
+        let p = Params::new()
+            .with_extra_fields(vec!["user".to_string(), "user.avatar".to_string()])
+            .limit(30)
+            .offset(10);
+        assert_eq!(p.to_string(), "?&extra_fields=user,user.avatar&limit=30&offset=10");
     }
 }
