@@ -29,5 +29,5 @@ cargo test
 Run file from [examples](./examples) with:
 
 ```
-cargo run --example <example>
+cargo run --example <example> -- <example flags> <example args>
 ```
