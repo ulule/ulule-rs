@@ -7,6 +7,7 @@ use crate::pagination::Page;
 use crate::i18n::I18n;
 use crate::error::Error;
 
+// Project is a search resource.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Project {
     // Link to the project page on the Ulule website
@@ -42,6 +43,7 @@ pub struct Project {
     pub kind: String,
 }
 
+// Projects is a paginated list of search project resource.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Projects {
     pub projects: Vec<Project>,
