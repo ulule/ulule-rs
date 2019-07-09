@@ -1,5 +1,7 @@
 # Ulule API bindings
 
+[Ulule API documentation](https://developers.ulule.com/)
+
 ## Usage
 
 Put this in `Cargo.toml`:
