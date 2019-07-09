@@ -6,7 +6,6 @@ use crate::params;
 use crate::pagination::Page;
 use crate::i18n::I18n;
 use crate::error::Error;
-use crate::user::User;
 
 // Project is a search resource.
 #[derive(Debug, Serialize, Deserialize)]
@@ -53,6 +52,25 @@ pub struct Project {
 pub struct Projects {
     pub projects: Vec<Project>,
     pub meta: Page
+}
+
+// User is the user resource.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct User {
+    // Link to the profile page on the Ulule website
+    pub absolute_url: String,
+    // First name of the user
+    pub first_name: String,
+    // Unique id of the user
+    pub id: u64,
+    // Last name of the user
+    pub last_name: String,
+    // Concatenation of first name and last name if they exist, username otherwise
+    pub name: String,
+    // Unique screenname of the user
+    pub screenname: String,
+    // Unique username of the user
+    pub username: String,
 }
 
 pub type Params = params::Params;
