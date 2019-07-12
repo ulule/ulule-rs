@@ -2,10 +2,11 @@ use futures::future::Future;
 use serde::{Serialize, Deserialize};
 
 use crate::client::Client;
-use crate::params;
-use crate::pagination::Page;
-use crate::i18n::I18n;
 use crate::error::Error;
+use crate::i18n::I18n;
+use crate::image::Image;
+use crate::pagination::Page;
+use crate::params;
 
 // Project is a search resource.
 #[derive(Debug, Serialize, Deserialize)]
@@ -44,7 +45,9 @@ pub struct Project {
 
     // The following fields are extra_fields and must be explicitly specified in the request:
     // Owner is the project owner
-    pub owner: Option<User>
+    pub owner: Option<User>,
+    // Main image of the project
+    pub main_image: Option<Image>
 }
 
 // Projects is a paginated list of search project resource.

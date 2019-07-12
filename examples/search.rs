@@ -7,10 +7,10 @@ use ulule::search;
 fn main() {
     let client = Client::new();
     let p: search::Projects = System::new("test").block_on(lazy(|| {
-        search::projects(&client, Some(search::Params::new()
-                                       .with_extra_fields(vec!["owner".to_string()])
-                                       .limit(30)
-                                       ))
+        let p = search::Params::new()
+            .with_extra_fields(vec!["owner".to_string(),"main_image".to_string()])
+            .limit(3);
+        search::projects(&client, Some(p))
     })).unwrap();
     println!("{:?}", p)
 }
