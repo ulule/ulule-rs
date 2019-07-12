@@ -86,8 +86,29 @@ pub fn projects(client: &Client, params: Option<Params>) -> impl Future<Item=Pro
 pub type Params = params::Params;
 
 impl Params {
+    pub fn with_langs(self, langs: Vec<String>) -> Params {
+        self.add_query("langs".to_string(), langs.join(","))
+    }
+
+    pub fn with_countries(self, countries: Vec<String>) -> Params {
+        self.add_query("countries".to_string(), countries.join(","))
+    }
+
+    pub fn with_partners(self, partners: Vec<String>) -> Params {
+        self.add_query("partners".to_string(), partners.join(","))
+    }
+
+    pub fn with_selected_ids(self, ids: Vec<u64>) -> Params {
+        let selected: Vec<String> = ids.iter().map(|i| i.to_string()).collect();
+        self.add_query("selected_ids".to_string(), selected.join(","))
+    }
+
     pub fn with_term(self, term: String) -> Params {
         self.add_query(term, "".to_string())
+    }
+
+    pub fn with_query_sort(self, sort: String) -> Params {
+        self.add_query("sort".to_string(), sort)
     }
 
     pub fn with_tag_id(self, id: u64) -> Params {
@@ -110,5 +131,15 @@ impl Params {
 impl From<Params> for std::string::String {
     fn from(p: Params) -> Self {
         p.to_string()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn with_selected_ids() {
+        use super::Params;
+        let p = Params::new().with_selected_ids(vec![42, 1337]);
+        assert_eq!(p.to_string(), "?q=selected_ids:42,1337");
     }
 }
