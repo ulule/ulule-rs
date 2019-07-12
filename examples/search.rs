@@ -8,7 +8,7 @@ fn main() {
     let client = Client::new();
     let p = search::Params::new()
         .limit(3)
-        .with_term("beer".to_string())
+        .with_term("beer")
         .with_extra_fields(
             vec![
             "owner".to_string(),
