@@ -46,25 +46,23 @@ impl Params {
         let mut res = Vec::new();
 
         if !self.query.is_empty() {
-            let mut q = Vec::new();
-            for (key, value) in  self.query.into_iter(){
-                let mut tuple = key;
+            let q: Vec<String> = self.query.iter().map(|(key, value)| {
+                let mut tuple = key.clone();
                 if !value.is_empty() {
                     tuple.push_str(":");
                     tuple.push_str(&value);
-                }
-                q.push(tuple);
-            };
-            res.push(format!("q={}",q.join("+")));
+                }; tuple
+            }).collect();
+            res.push(format!("q={}", q.join("+")));
         }
 
         if !self.extra_fields.is_empty() {
             res.push(format!("extra_fields={}", &self.extra_fields.join(",")));
         }
 
-        self.lang.map(|l|{res.push(format!("lang={}", &l.to_string()));});
-        self.limit.map(|l|{res.push(format!("limit={}", &l.to_string()));});
-        self.offset.map(|o|{res.push(format!("offset={}", &o.to_string()));});
+        self.lang.map(|l|{res.push(format!("lang={}", l));});
+        self.limit.map(|l|{res.push(format!("limit={}", l));});
+        self.offset.map(|o|{res.push(format!("offset={}", o));});
 
         if res.is_empty() {
             return "".to_string()
