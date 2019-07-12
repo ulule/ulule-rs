@@ -29,6 +29,12 @@ impl Params {
         params
     }
 
+    pub fn add_query(self, key: String, value: String) -> Params {
+        let mut params = self;
+        params.query.push((key, value));
+        params
+    }
+
     pub fn with_extra_fields(self, fields: Vec<String>) -> Params {
         let mut params = self;
         params.extra_fields = fields;
@@ -36,40 +42,34 @@ impl Params {
     }
 
     pub fn to_string(self) -> String {
-        let mut res = "?".to_string();
+        let mut res = Vec::new();
 
         if !self.query.is_empty() {
-            res.push_str("&q=");
+            let mut q = Vec::new();
             for (key, value) in  self.query.into_iter(){
-                res.push_str(&key);
-                if value.is_empty() {
-                    res.push_str(":");
-                    res.push_str(&value);
+                let mut tuple = key;
+                if !value.is_empty() {
+                    tuple.push_str(":");
+                    tuple.push_str(&value);
                 }
-                res.push_str("+");
+                q.push(tuple);
             };
+            res.push(format!("q={}",q.join("+")));
         }
 
         if !self.extra_fields.is_empty() {
-            res.push_str("&extra_fields=");
-            res.push_str(&self.extra_fields.join(","));
+            res.push(format!("extra_fields={}", &self.extra_fields.join(",")));
         }
 
-        self.lang.map(|l|{
-                res.push_str("&lang=");
-                res.push_str(&l.to_string())
-        });
+        self.lang.map(|l|{res.push(format!("lang={}", &l.to_string()));});
+        self.limit.map(|l|{res.push(format!("limit={}", &l.to_string()));});
+        self.offset.map(|o|{res.push(format!("offset={}", &o.to_string()));});
 
-        self.limit.map(|l|{
-                res.push_str("&limit=");
-                res.push_str(&l.to_string())
-        });
-        self.offset.map(|o|{
-                res.push_str("&offset=");
-                res.push_str(&o.to_string())
-        });
+        if res.is_empty() {
+            return "".to_string()
+        }
 
-        res
+        format!("?{}", res.join("&"))
     }
 }
 
@@ -80,8 +80,10 @@ mod tests {
         use super::Params;
         let p = Params::new()
             .with_extra_fields(vec!["user".to_string(), "user.avatar".to_string()])
+            .add_query("tag_id".to_string(), "1337".to_string())
+            .add_query("beer".to_string(), "".to_string())
             .limit(30)
             .offset(10);
-        assert_eq!(p.to_string(), "?&extra_fields=user,user.avatar&limit=30&offset=10");
+        assert_eq!(p.to_string(), "?q=tag_id:1337+beer&extra_fields=user,user.avatar&limit=30&offset=10");
     }
 }

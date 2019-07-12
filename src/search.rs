@@ -79,11 +79,31 @@ pub struct User {
     pub username: String,
 }
 
+pub fn projects(client: &Client, params: Option<Params>) -> impl Future<Item=Projects, Error=Error> {
+    client.get("/v1/search/projects", params)
+}
+
 pub type Params = params::Params;
 
 impl Params {
-    pub fn new_limit(self, l: u64) -> Params {
-        self.limit(l)
+    pub fn with_term(self, term: String) -> Params {
+        self.add_query(term, "".to_string())
+    }
+
+    pub fn with_tag_id(self, id: u64) -> Params {
+        self.add_query("tag_id".to_string(), id.to_string())
+    }
+
+    pub fn with_owner_id(self, id: u64) -> Params {
+        self.add_query("owner_id".to_string(), id.to_string())
+    }
+
+    pub fn with_city_id(self, id: u64) -> Params {
+        self.add_query("city_id".to_string(), id.to_string())
+    }
+
+    pub fn with_region_id(self, id: u64) -> Params {
+        self.add_query("region_id".to_string(), id.to_string())
     }
 }
 
@@ -91,10 +111,4 @@ impl From<Params> for std::string::String {
     fn from(p: Params) -> Self {
         p.to_string()
     }
-}
-
-
-
-pub fn projects(client: &Client, params: Option<Params>) -> impl Future<Item=Projects, Error=Error> {
-    client.get("/v1/search/projects", params)
 }
