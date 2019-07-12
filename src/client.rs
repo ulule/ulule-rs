@@ -34,8 +34,8 @@ impl Client {
         clt
     }
 
-    pub fn get<T: serde::de::DeserializeOwned>(&self, path: impl Into<String>, params: Option<impl Into<String>>)
-        -> impl Future<Item=T, Error=Error> {
+    pub fn get<T, S, U>(&self, path: S, params: Option<U>) -> impl Future<Item=T, Error=Error>
+        where T: serde::de::DeserializeOwned, S: Into<String>, U: Into<String> {
             let p = params.map_or("".to_string(), |par|(par.into()));
             let req = self.client
                       .get(self.host.to_owned()+&path.into()+&p)
@@ -44,8 +44,8 @@ impl Client {
             self.send(req, Body::Empty)
         }
 
-    fn send<T: serde::de::DeserializeOwned>(&self, req: awc::ClientRequest, body: Body)
-        -> impl Future<Item=T, Error=Error> {
+    fn send<T>(&self, req: awc::ClientRequest, body: Body) -> impl Future<Item=T, Error=Error>
+        where T: serde::de::DeserializeOwned {
             req.send_body(body).map_err(|e| {Error::Http(e)})
                 .and_then(|mut resp| {
                     resp.body().map(move |body_out| {

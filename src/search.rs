@@ -87,44 +87,44 @@ pub type Params = params::Params;
 
 impl Params {
     pub fn with_langs(self, langs: Vec<String>) -> Params {
-        self.add_query("langs".to_string(), langs.join(","))
+        self.add_query("langs", langs.join(","))
     }
 
     pub fn with_countries(self, countries: Vec<String>) -> Params {
-        self.add_query("countries".to_string(), countries.join(","))
+        self.add_query("countries", countries.join(","))
     }
 
     pub fn with_partners(self, partners: Vec<String>) -> Params {
-        self.add_query("partners".to_string(), partners.join(","))
+        self.add_query("partners", partners.join(","))
     }
 
     pub fn with_selected_ids(self, ids: Vec<u64>) -> Params {
         let selected: Vec<String> = ids.iter().map(|i| i.to_string()).collect();
-        self.add_query("selected_ids".to_string(), selected.join(","))
+        self.add_query("selected_ids", selected.join(","))
     }
 
-    pub fn with_term(self, term: String) -> Params {
-        self.add_query(term, "".to_string())
+    pub fn with_term(self, term: impl Into<String>) -> Params {
+        self.add_query(term, "")
     }
 
     pub fn with_query_sort(self, sort: String) -> Params {
-        self.add_query("sort".to_string(), sort)
+        self.add_query("sort", sort)
     }
 
     pub fn with_tag_id(self, id: u64) -> Params {
-        self.add_query("tag_id".to_string(), id.to_string())
+        self.add_query("tag_id", id.to_string())
     }
 
     pub fn with_owner_id(self, id: u64) -> Params {
-        self.add_query("owner_id".to_string(), id.to_string())
+        self.add_query("owner_id", id.to_string())
     }
 
     pub fn with_city_id(self, id: u64) -> Params {
-        self.add_query("city_id".to_string(), id.to_string())
+        self.add_query("city_id", id.to_string())
     }
 
     pub fn with_region_id(self, id: u64) -> Params {
-        self.add_query("region_id".to_string(), id.to_string())
+        self.add_query("region_id", id.to_string())
     }
 }
 

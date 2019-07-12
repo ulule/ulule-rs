@@ -29,9 +29,10 @@ impl Params {
         params
     }
 
-    pub fn add_query(self, key: String, value: String) -> Params {
+    pub fn add_query<K, V>(self, key: K, value: V) -> Params
+        where K: Into<String>, V: Into<String> {
         let mut params = self;
-        params.query.push((key, value));
+        params.query.push((key.into(), value.into()));
         params
     }
 
@@ -80,8 +81,8 @@ mod tests {
         use super::Params;
         let p = Params::new()
             .with_extra_fields(vec!["user".to_string(), "user.avatar".to_string()])
-            .add_query("tag_id".to_string(), "1337".to_string())
-            .add_query("beer".to_string(), "".to_string())
+            .add_query("tag_id", "1337")
+            .add_query("beer", "")
             .limit(30)
             .offset(10);
         assert_eq!(p.to_string(), "?q=tag_id:1337+beer&extra_fields=user,user.avatar&limit=30&offset=10");
