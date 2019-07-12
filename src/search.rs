@@ -7,6 +7,7 @@ use crate::i18n::I18n;
 use crate::image::Image;
 use crate::pagination::Page;
 use crate::params;
+use crate::tag::Tag;
 
 // Project is a search resource.
 #[derive(Debug, Serialize, Deserialize)]
@@ -44,10 +45,12 @@ pub struct Project {
     pub kind: String,
 
     // The following fields are extra_fields and must be explicitly specified in the request:
+    // Main image of the project
+    pub main_image: Option<Image>,
+    // Main tag of the project
+    pub main_tag: Option<Tag>,
     // Owner is the project owner
     pub owner: Option<User>,
-    // Main image of the project
-    pub main_image: Option<Image>
 }
 
 // Projects is a paginated list of search project resource.
