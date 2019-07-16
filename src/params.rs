@@ -17,6 +17,17 @@ impl Params {
         }
     }
 
+    pub fn from_string<T>(s: T) -> Params
+        where T: Into<String> {
+        let input = s.into();
+        let mut params = Params::new();
+        let p: Vec<&str> = input.trim_start_matches('?').split('&').collect();
+        for v in &p {
+            let tuple: Vec<&str> = v.split('=').collect();
+        }
+        params
+    }
+
     pub fn limit(self, l: u64) -> Params {
         let mut params = self;
         params.limit = Some(l);
