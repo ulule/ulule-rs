@@ -1,3 +1,4 @@
+#[derive(Debug, PartialEq)]
 pub struct Params {
     query: Vec<(String, String)>,
     extra_fields: Vec<String>,
@@ -19,12 +20,28 @@ impl Params {
 
     pub fn from_string<T>(s: T) -> Params
         where T: Into<String> {
-        let input = s.into();
-        let mut params = Params::new();
-        let p: Vec<&str> = input.trim_start_matches('?').split('&').collect();
-        for v in &p {
-            let tuple: Vec<&str> = v.split('=').collect();
+            let input = s.into();
+            let mut params = Params::new();
+            let p: Vec<&str> = input.trim_start_matches('?').split('&').collect();
+            for v in &p {
+                let tuple: Vec<&str> = v.split('=').collect();
+                if tuple.len() > 1 {
+                    match tuple[0] {
+                        "limit" => params.limit = Some(tuple[1].parse::<u64>().unwrap()),
+                        "offset" => params.offset = Some(tuple[1].parse::<u64>().unwrap()),
+                        "lang" => params.lang = Some(tuple[1].to_string()),
+                        "extra_fields" => params.extra_fields = tuple[1]
+                            .split(',').map(|i| i.to_string()).collect(),
+                        _ => (),
+                    }
+                }
+            }
+            params
         }
+
+    pub fn lang(self, l: impl Into<String>) -> Params {
+        let mut params = self;
+        params.lang = Some(l.into());
         params
     }
 
@@ -42,10 +59,10 @@ impl Params {
 
     pub fn add_query<K, V>(self, key: K, value: V) -> Params
         where K: Into<String>, V: Into<String> {
-        let mut params = self;
-        params.query.push((key.into(), value.into()));
-        params
-    }
+            let mut params = self;
+            params.query.push((key.into(), value.into()));
+            params
+        }
 
     pub fn with_extra_fields(self, fields: Vec<String>) -> Params {
         let mut params = self;
@@ -86,6 +103,17 @@ impl Params {
 #[cfg(test)]
 mod tests {
     #[test]
+    fn from_string() {
+        use super::Params;
+        assert_eq!(
+            Params::from_string("?q=tag_id:1337+beer&extra_fields=user,user.avatar&limit=30&offset=10&lang=fr"),
+            Params::new()
+            .with_extra_fields(vec!["user".to_string(), "user.avatar".to_string()])
+            .limit(30)
+            .offset(10)
+            .lang("fr"));
+    }
+    #[test]
     fn to_string() {
         use super::Params;
         let p = Params::new()
@@ -93,7 +121,8 @@ mod tests {
             .add_query("tag_id", "1337")
             .add_query("beer", "")
             .limit(30)
-            .offset(10);
-        assert_eq!(p.to_string(), "?q=tag_id:1337+beer&extra_fields=user,user.avatar&limit=30&offset=10");
+            .offset(10)
+            .lang("fr");
+        assert_eq!(p.to_string(), "?q=tag_id:1337+beer&extra_fields=user,user.avatar&lang=fr&limit=30&offset=10");
     }
 }
