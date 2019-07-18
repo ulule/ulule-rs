@@ -5,6 +5,7 @@ use std::str::FromStr;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Page {
     pub limit: u8,
+    pub offset: Option<u8>,
     pub next: Option<String>
 }
 
