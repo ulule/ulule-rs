@@ -114,12 +114,6 @@ impl FromStr for Params {
     }
 }
 
-impl From<Params> for std::string::String {
-    fn from(p: Params) -> Self {
-        p.to_string()
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::Params;
