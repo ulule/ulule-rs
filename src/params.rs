@@ -95,6 +95,17 @@ impl FromStr for Params {
                     "lang" => params.lang = Some(tuple[1].to_string()),
                     "extra_fields" => params.extra_fields = tuple[1]
                         .split(',').map(|i| i.to_string()).collect(),
+                    "q" => {
+                        let queries: Vec<&str> = tuple[1].split(|c| c == '+' || c == ' ').collect();
+                        for query in queries {
+                            let tuple:Vec<&str> = query.split(":").collect();
+                            match tuple.len() {
+                                1 => params.query.push((tuple[0].to_string(), "".to_string())),
+                                2 => params.query.push((tuple[0].to_string(), tuple[1].to_string())),
+                                _ => (),
+                            }
+                        }
+                    },
                     _ => (),
                 }
             }
@@ -119,6 +130,8 @@ mod tests {
             Params::from_str("?q=tag_id:1337+beer&extra_fields=user,user.avatar&limit=30&offset=10&lang=fr").unwrap(),
             Params::new()
             .with_extra_fields(vec!["user".to_string(), "user.avatar".to_string()])
+            .add_query("tag_id", "1337")
+            .add_query("beer", "")
             .limit(30)
             .offset(10)
             .lang("fr"));
