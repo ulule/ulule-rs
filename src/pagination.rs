@@ -9,7 +9,7 @@ pub struct Page {
 }
 
 impl Page {
-    pub fn has_next(self) -> bool {
+    pub fn has_next(&self) -> bool {
         match self.next {
             None => false,
             Some(_) => true,
