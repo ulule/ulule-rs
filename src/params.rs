@@ -1,3 +1,7 @@
+use std::str::FromStr;
+use std::fmt;
+use std::num::ParseIntError;
+
 #[derive(Debug, PartialEq)]
 pub struct Params {
     query: Vec<(String, String)>,
@@ -17,27 +21,6 @@ impl Params {
             extra_fields: Default::default(),
         }
     }
-
-    pub fn from_string<T>(s: T) -> Params
-        where T: Into<String> {
-            let input = s.into();
-            let mut params = Params::new();
-            let p: Vec<&str> = input.trim_start_matches('?').split('&').collect();
-            for v in &p {
-                let tuple: Vec<&str> = v.split('=').collect();
-                if tuple.len() > 1 {
-                    match tuple[0] {
-                        "limit" => params.limit = Some(tuple[1].parse::<u64>().unwrap()),
-                        "offset" => params.offset = Some(tuple[1].parse::<u64>().unwrap()),
-                        "lang" => params.lang = Some(tuple[1].to_string()),
-                        "extra_fields" => params.extra_fields = tuple[1]
-                            .split(',').map(|i| i.to_string()).collect(),
-                        _ => (),
-                    }
-                }
-            }
-            params
-        }
 
     pub fn lang(self, l: impl Into<String>) -> Params {
         let mut params = self;
@@ -69,8 +52,10 @@ impl Params {
         params.extra_fields = fields;
         params
     }
+}
 
-    pub fn to_string(self) -> String {
+impl fmt::Display for Params {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut res = Vec::new();
 
         if !self.query.is_empty() {
@@ -88,25 +73,50 @@ impl Params {
             res.push(format!("extra_fields={}", &self.extra_fields.join(",")));
         }
 
-        self.lang.map(|l|{res.push(format!("lang={}", l));});
+        self.lang.as_ref().map(|l|{res.push(format!("lang={}", l));});
         self.limit.map(|l|{res.push(format!("limit={}", l));});
         self.offset.map(|o|{res.push(format!("offset={}", o));});
 
-        if res.is_empty() {
-            return "".to_string()
-        }
+        write!(f, "?{}", res.join("&"))
+    }
+}
 
-        format!("?{}", res.join("&"))
+impl FromStr for Params {
+    type Err = ParseIntError;
+    fn from_str(input: &str) -> Result<Params, Self::Err> {
+        let mut params = Params::new();
+        let p: Vec<&str> = input.trim_start_matches('?').split('&').collect();
+        for v in &p {
+            let tuple: Vec<&str> = v.split('=').collect();
+            if tuple.len() > 1 {
+                match tuple[0] {
+                    "limit" => params.limit = Some(tuple[1].parse::<u64>()?),
+                    "offset" => params.offset = Some(tuple[1].parse::<u64>()?),
+                    "lang" => params.lang = Some(tuple[1].to_string()),
+                    "extra_fields" => params.extra_fields = tuple[1]
+                        .split(',').map(|i| i.to_string()).collect(),
+                    _ => (),
+                }
+            }
+        }
+        Ok(params)
+    }
+}
+
+impl From<Params> for std::string::String {
+    fn from(p: Params) -> Self {
+        p.to_string()
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::Params;
+    use std::str::FromStr;
     #[test]
     fn from_string() {
-        use super::Params;
         assert_eq!(
-            Params::from_string("?q=tag_id:1337+beer&extra_fields=user,user.avatar&limit=30&offset=10&lang=fr"),
+            Params::from_str("?q=tag_id:1337+beer&extra_fields=user,user.avatar&limit=30&offset=10&lang=fr").unwrap(),
             Params::new()
             .with_extra_fields(vec!["user".to_string(), "user.avatar".to_string()])
             .limit(30)
@@ -115,7 +125,6 @@ mod tests {
     }
     #[test]
     fn to_string() {
-        use super::Params;
         let p = Params::new()
             .with_extra_fields(vec!["user".to_string(), "user.avatar".to_string()])
             .add_query("tag_id", "1337")

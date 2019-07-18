@@ -79,7 +79,7 @@ pub struct User {
     pub username: String,
 }
 
-pub fn projects(client: &Client, params: Option<Params>) -> impl Future<Item=Projects, Error=Error> {
+pub fn projects(client: &Client, params: Option<impl Into<String>>) -> impl Future<Item=Projects, Error=Error> {
     client.get("/v1/search/projects", params)
 }
 
@@ -125,12 +125,6 @@ impl Params {
 
     pub fn with_region_id(self, id: u64) -> Params {
         self.add_query("region_id", id.to_string())
-    }
-}
-
-impl From<Params> for std::string::String {
-    fn from(p: Params) -> Self {
-        p.to_string()
     }
 }
 

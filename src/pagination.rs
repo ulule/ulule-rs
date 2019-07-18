@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 use crate::params::Params;
+use std::str::FromStr;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Page {
@@ -18,7 +19,7 @@ impl Page {
     pub fn get_next(self) -> Option<Params> {
         match self.next {
             None => None,
-            Some(s) => Some(Params::from_string(s)),
+            Some(s) => Some(Params::from_str(&s).unwrap()),
         }
     }
 }
