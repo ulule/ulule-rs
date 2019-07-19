@@ -1,5 +1,7 @@
 # Ulule
 
+[![ulule on crates.io](https://img.shields.io/crates/v/ulule.svg)](https://crates.io/crates/ulule)
+
 Rust API bindings for the Ulule v1 HTTP API.
 This library rely on rust Futures to allow asynchronous usage.
 
