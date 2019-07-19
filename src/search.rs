@@ -86,43 +86,45 @@ pub fn projects(client: &Client, params: Option<impl Into<String>>) -> impl Futu
 pub type Params = params::Params;
 
 impl Params {
+    // Filter projects by language
     pub fn with_langs(self, langs: Vec<String>) -> Params {
         self.add_query("langs", langs.join(","))
     }
-
+    // Filter projects by country
     pub fn with_countries(self, countries: Vec<String>) -> Params {
         self.add_query("countries", countries.join(","))
     }
-
+    // Filter projects by partner
     pub fn with_partners(self, partners: Vec<String>) -> Params {
         self.add_query("partners", partners.join(","))
     }
-
+    // Filter projects by ids
     pub fn with_selected_ids(self, ids: Vec<u64>) -> Params {
         let selected: Vec<String> = ids.iter().map(|i| i.to_string()).collect();
         self.add_query("selected_ids", selected.join(","))
     }
-
+    // Filter projects with description, name or subtitle matching the given term
     pub fn with_term(self, term: impl Into<String>) -> Params {
         self.add_query(term, "")
     }
-
+    // Sort field, can be one of popular, amount, ending-soon or new
+    // default is popular
     pub fn with_query_sort(self, sort: String) -> Params {
         self.add_query("sort", sort)
     }
-
+    // Filter projects by tag
     pub fn with_tag_id(self, id: u64) -> Params {
         self.add_query("tag_id", id.to_string())
     }
-
+    // Filter projects by owner
     pub fn with_owner_id(self, id: u64) -> Params {
         self.add_query("owner_id", id.to_string())
     }
-
+    // Filter projects by city
     pub fn with_city_id(self, id: u64) -> Params {
         self.add_query("city_id", id.to_string())
     }
-
+    // Filter projects by region
     pub fn with_region_id(self, id: u64) -> Params {
         self.add_query("region_id", id.to_string())
     }

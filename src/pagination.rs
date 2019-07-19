@@ -1,3 +1,8 @@
+// Most endpoints that return a list of resources use the same pagination system.
+// The pagination is cursor-based and returns objects created before a timestamp
+// in reverse chronological order.
+// See https://developers.ulule.com
+
 use serde::{Serialize, Deserialize};
 use crate::params::Params;
 use std::str::FromStr;
