@@ -4,6 +4,7 @@ version = "0.0.0"
 description = "API bindings for the Ulule v1 HTTP API"
 authors = ["Edouard Paris <m@edouard.paris>"]
 edition = "2018"
+license = "MIT"
 
 [lib]
 name = "ulule"
