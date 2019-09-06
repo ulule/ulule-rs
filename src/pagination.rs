@@ -3,15 +3,15 @@
 // in reverse chronological order.
 // See https://developers.ulule.com
 
-use serde::{Serialize, Deserialize};
 use crate::params::Params;
+use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Page {
-    pub limit: u8,
-    pub offset: Option<u8>,
-    pub next: Option<String>
+    pub limit: u64,
+    pub offset: Option<u64>,
+    pub next: Option<String>,
 }
 
 impl Page {
