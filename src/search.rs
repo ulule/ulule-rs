@@ -1,5 +1,5 @@
 use futures::future::Future;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::client::Client;
 use crate::error::Error;
@@ -21,9 +21,9 @@ pub struct Project {
     // Two-letter ISO code of the currency
     pub currency: String,
     // Date at which the funding campaign ends, with RFC 3339 format
-    pub date_end: String,
+    pub date_end: Option<String>,
     // Date at which the funding campaign starts, with RFC 3339 format
-    pub date_start: String,
+    pub date_start: Option<String>,
     // True if the funding campaign is finished
     pub finished: bool,
     // Goal in the project currency if type is project, or number of pre-orders if type is presale.
@@ -57,7 +57,7 @@ pub struct Project {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Projects {
     pub projects: Vec<Project>,
-    pub meta: Page
+    pub meta: Page,
 }
 
 // User is the user resource.
@@ -79,7 +79,10 @@ pub struct User {
     pub username: String,
 }
 
-pub fn projects(client: &Client, params: Option<impl Into<String>>) -> impl Future<Item=Projects, Error=Error> {
+pub fn projects(
+    client: &Client,
+    params: Option<impl Into<String>>,
+) -> impl Future<Item = Projects, Error = Error> {
     client.get("/v1/search/projects", params)
 }
 
@@ -97,6 +100,10 @@ impl Params {
     // Filter projects by partner
     pub fn with_partners(self, partners: Vec<String>) -> Params {
         self.add_query("partners", partners.join(","))
+    }
+    // Filter projects by status
+    pub fn with_status(self, status: impl Into<String>) -> Params {
+        self.add_query("status", status)
     }
     // Filter projects by ids
     pub fn with_selected_ids(self, ids: Vec<u64>) -> Params {
