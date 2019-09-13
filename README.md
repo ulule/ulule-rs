@@ -14,7 +14,7 @@ Put this in `Cargo.toml`:
 
 ```toml
 [dependencies]
-ulule = "0.0.2"
+ulule = "0.0.3"
 ```
 
 and this in the crate root:
