@@ -14,13 +14,15 @@ Put this in `Cargo.toml`:
 
 ```toml
 [dependencies]
-ulule = "0.0.3"
+ulule = "1.0.0"
+ulule_client = "0.0.3"
 ```
 
 and this in the crate root:
 
 ```rust
 extern crate ulule;
+extern crate ulule_client;
 ```
 
 ## Test
@@ -43,7 +45,7 @@ cargo run --example <example> -- <example flags> <example args>
 To get started, create a client:
 
 ```rust
-let client = ulule::client::Client::new();
+let client = ulule_client::Client::new();
 ```
 
 Search for the last three project created matching the term `beer`
@@ -57,6 +59,6 @@ let p = search::Params::new()
 
 // inside an actor system like actix_rt
 let projects: search::Projects = actix_rt::System::new("test").block_on(lazy(|| {
-        search::projects(&client, Some(p))
+    ulule_client::search_projects(&client, Some(p))
 })).unwrap();
 ```
