@@ -1,8 +1,8 @@
 use futures::future::{lazy};
 use actix_rt::System;
 
-use ulule::client::Client;
 use ulule::search;
+use ulule_client::{Client, search_projects};
 
 fn main() {
     let mut test = System::new("test");
@@ -18,7 +18,7 @@ fn main() {
 
     println!("first page -------");
     let first_page: search::Projects = test.block_on(lazy(|| {
-            search::projects(&client, Some(p))
+            search_projects(&client, Some(p))
         })).unwrap();
     println!("{:?}", first_page);
 
@@ -28,7 +28,7 @@ fn main() {
 
     println!("second page -------");
     let second_page: search::Projects = test.block_on(lazy(|| {
-            search::projects(&client, first_page.meta.next)
+            search_projects(&client, first_page.meta.next)
         })).unwrap();
     println!("{:?}", second_page)
 }

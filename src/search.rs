@@ -1,8 +1,5 @@
-use futures::future::Future;
 use serde::{Deserialize, Serialize};
 
-use crate::client::Client;
-use crate::error::Error;
 use crate::i18n::I18n;
 use crate::image::Image;
 use crate::pagination::Page;
@@ -77,13 +74,6 @@ pub struct User {
     pub screenname: String,
     // Unique username of the user
     pub username: String,
-}
-
-pub fn projects(
-    client: &Client,
-    params: Option<impl Into<String>>,
-) -> impl Future<Item = Projects, Error = Error> {
-    client.get("/v1/search/projects", params)
 }
 
 pub type Params = params::Params;

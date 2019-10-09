@@ -5,7 +5,8 @@ use serde_json;
 use actix_http::body::Body;
 use futures::future::Future;
 
-use crate::error::{Error, RequestError};
+use ulule::error::RequestError;
+use ulule::search;
 
 pub struct Client {
     client: awc::Client,
@@ -71,4 +72,23 @@ impl Client {
                     .map_err(|e| Error::Payload(awc::error::JsonPayloadError::Deserialize(e)))
             })
     }
+}
+
+pub fn search_projects(
+    client: &Client,
+    params: Option<impl Into<String>>,
+) -> impl Future<Item = search::Projects, Error = Error> {
+    client.get("/v1/search/projects", params)
+}
+
+#[derive(Debug)]
+pub enum Error {
+    /// An error reported by Ulule in the response body.
+    Ulule(Vec<RequestError>),
+    // A networking error communicating with the Ulule server.
+    Http(awc::error::SendRequestError),
+    // A set of errors that can occur during parsing payloads.
+    Payload(awc::error::JsonPayloadError),
+    // An error reading the response body.
+    Io(std::io::Error),
 }
