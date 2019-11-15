@@ -1,7 +1,7 @@
 # Ulule
 
 [![ulule on crates.io](https://img.shields.io/crates/v/ulule.svg)](https://crates.io/crates/ulule)
-[![stripe-rust on docs.rs](https://docs.rs/ulule/badge.svg)](https://docs.rs/ulule)
+[![ulule-rust on docs.rs](https://docs.rs/ulule/badge.svg)](https://docs.rs/ulule)
 
 Rust API bindings for the Ulule v1 HTTP API.
 This library rely on rust Futures to allow asynchronous usage.
@@ -15,7 +15,7 @@ Put this in `Cargo.toml`:
 ```toml
 [dependencies]
 ulule = "1.0.0"
-ulule_client = "0.0.3"
+ulule_client = "1.0.0"
 ```
 
 and this in the crate root:
@@ -31,15 +31,6 @@ extern crate ulule_client;
 cargo test
 ```
 
-
-## Examples
-
-Run file from [examples](./examples) with:
-
-```
-cargo run --example <example> -- <example flags> <example args>
-```
-
 ## Getting Started
 
 To get started, create a client:
@@ -52,13 +43,29 @@ Search for the last three project created matching the term `beer`
 with their owner:
 
 ```rust
-let p = search::Params::new()
-        .limit(3)
-        .with_term("beer")
-        .with_extra_fields(vec!["owner".to_string()]);
+use ulule::search;
+use ulule_client::{search_projects, Client};
 
-// inside an actor system like actix_rt
-let projects: search::Projects = actix_rt::System::new("test").block_on(lazy(|| {
-    ulule_client::search_projects(&client, Some(p))
-})).unwrap();
+#[tokio::main]
+async fn main() {
+    let client = Client::new();
+    let p = search::Params::new()
+        .limit(2)
+        .with_term("beer")
+        .with_extra_fields(vec![
+            "owner".to_string(),
+            "main_tag".to_string(),
+            "main_image".to_string(),
+        ]);
+
+    let first_page = search_projects(&client, Some(p)).await.unwrap();
+    println!("first page: {:?}", first_page);
+
+    if !first_page.meta.has_next() {
+        return;
+    }
+
+    let second_page = search_projects(&client, first_page.meta.next).await.unwrap();
+    println!("second page: {:?}", second_page)
+}
 ```

@@ -1,34 +1,25 @@
-use futures::future::{lazy};
-use actix_rt::System;
-
 use ulule::search;
-use ulule_client::{Client, search_projects};
+use ulule_client::{search_projects, Client};
 
-fn main() {
-    let mut test = System::new("test");
+#[tokio::main]
+async fn main() {
     let client = Client::new();
     let p = search::Params::new()
         .limit(2)
         .with_term("beer")
-        .with_extra_fields(
-            vec![
+        .with_extra_fields(vec![
             "owner".to_string(),
             "main_tag".to_string(),
-            "main_image".to_string()]);
+            "main_image".to_string(),
+        ]);
 
-    println!("first page -------");
-    let first_page: search::Projects = test.block_on(lazy(|| {
-            search_projects(&client, Some(p))
-        })).unwrap();
-    println!("{:?}", first_page);
+    let first_page = search_projects(&client, Some(p)).await.unwrap();
+    println!("first page: {:?}", first_page);
 
     if !first_page.meta.has_next() {
-        return
+        return;
     }
 
-    println!("second page -------");
-    let second_page: search::Projects = test.block_on(lazy(|| {
-            search_projects(&client, first_page.meta.next)
-        })).unwrap();
-    println!("{:?}", second_page)
+    let second_page = search_projects(&client, first_page.meta.next).await.unwrap();
+    println!("second page: {:?}", second_page)
 }
